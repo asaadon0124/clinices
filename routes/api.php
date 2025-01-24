@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\VerifyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\UsersController;
@@ -18,12 +20,16 @@ use App\Http\Controllers\Users\UsersController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) 
 {
     return $request->user(); 
-
-
 });
 
 
 Route::prefix('users')->group(function()
 {
-    Route::post('/register', [UsersController::class, 'register']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::get('/logout', [AuthController::class, 'logout']);
+        // Route::post('/send-code', [VerifyController::class, 'sendCode']);
+        // Route::post('/check-code', [VerifyController::class, 'checkCode']);
+    });
 });

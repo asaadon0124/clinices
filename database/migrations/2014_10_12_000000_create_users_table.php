@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
 
 
-            $table->integer('code')->unique();
+            $table->integer('code')->unique()->nullable();
             $table->timestamp('code_expired_at')->nullable();
             $table->string('image')->default('default.jpg')->nullable();
             $table->enum('status',['active','un_active'])->default('un_active')->nullable();
@@ -35,7 +35,7 @@ return new class extends Migration
             $table->text('desc')->nullable();
             $table->string('clinic_address')->nullable();
             $table->integer('ex_years')->nullable();
-            $table->string('specializon_id')->nullable();    //  التخصص 
+            $table->string('specializon_id')->nullable();  
 
 
 
