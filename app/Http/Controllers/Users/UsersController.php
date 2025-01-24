@@ -30,6 +30,7 @@ class UsersController extends Controller
     private function insertData($request)
     {
         $age = Carbon::parse($request->birth_date)->age;
+        
 
         return 
         [
