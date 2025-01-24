@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Users\ForgetPasswordRequest;
 use App\Http\Requests\Users\LoginRequest;
 use App\Http\Requests\Users\RegisterRequest;
 use App\Models\User;
@@ -28,31 +29,33 @@ class AuthController extends Controller
             'phone'         => $request->phone
         ];
     }
-    public function register(RegisterRequest $request)
-    {
+    public function register(RegisterRequest $request){
         $data = $this->insertData($request);
         $user = User::create($data);
         $token = $user->createToken('token')->plainTextToken;
         return $this->data(compact('user','token'),'',201);
     }
-
     public function login(LoginRequest $request){
         $user = User::where('email', $request->email)->first();
-
         if(!Hash::check($request->password, $user->password)){
             return $this->errorsMessage(['error' => 'Email Or Password Is Not Valid']);
         }
-
         if(is_null($user->email_verified_at)){
             return $this->errorsMessage(['error' => 'You Must Verify Your Email']);
         }
-
+        $user->status = 'active';
+        $user->save();
         $user->token = $user->createToken('token')->plainTextToken;
         return $this->data(compact('user'), 'Login Suuccessfully');
     }
-
     public function logout(){
         Auth::user()->currentAccessToken()->delete();
         return $this->successMessage('Logout Successfully');
+    }
+    public function forgetPassword(ForgetPasswordRequest $request){
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return $this->data(compact('user'), 'Updated Successfully');
     }
 }

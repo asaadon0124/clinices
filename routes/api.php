@@ -27,9 +27,10 @@ Route::prefix('users')->group(function()
 {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
     Route::middleware('auth:sanctum')->group(function(){
         Route::get('/logout', [AuthController::class, 'logout']);
-        // Route::post('/send-code', [VerifyController::class, 'sendCode']);
-        // Route::post('/check-code', [VerifyController::class, 'checkCode']);
+        Route::get('/send-code', [VerifyController::class, 'sendCode']);
+        Route::post('/check-code', [VerifyController::class, 'checkCode']);
     });
 });
