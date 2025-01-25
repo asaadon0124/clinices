@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Users\CheckForgetPassword;
 use App\Http\Requests\Users\VerifyCode;
 use App\Mail\SendCode;
+use App\Mail\SendCodeForgetPassword;
 use App\Models\User;
 use App\Traits\ApiTrait;
 use Illuminate\Http\Request;
@@ -57,5 +59,12 @@ class VerifyController extends Controller
         $user->email_verified_at = $now;
         $user->save();
         return $this->data(compact('user', 'token'), 'Verify Successfully');
+    }
+
+    public function verifyForgetPassword(CheckForgetPassword $request){
+        $user = User::where('email', $request->email)->first();
+        $link = 'http://localhost:3000/forgetPassword?email=' . urlencode($user->email);
+        Mail::to($user->email)->send(new SendCodeForgetPassword($link, $user->first_name, $user->last_name));
+        return $this->successMessage('Verification Successfully');
     }
 }

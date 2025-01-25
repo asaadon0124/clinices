@@ -27,6 +27,7 @@ Route::prefix('users')->group(function()
 {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/check-forget-password', [VerifyController::class, 'verifyForgetPassword']);
     Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
 
     
