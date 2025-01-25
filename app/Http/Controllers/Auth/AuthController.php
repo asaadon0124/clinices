@@ -52,6 +52,9 @@ class AuthController extends Controller
         Auth::user()->currentAccessToken()->delete();
         return $this->successMessage('Logout Successfully');
     }
+
+
+    
     public function forgetPassword(ForgetPasswordRequest $request){
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
