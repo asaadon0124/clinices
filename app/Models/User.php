@@ -38,4 +38,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+
+      // RELATIONS 
+      public function specializion()
+      {
+          return $this->belongsTo(Specializion::class);
+      } 
 }

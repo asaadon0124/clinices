@@ -37,7 +37,9 @@ class AuthController extends Controller
         $token = $user->createToken('token')->plainTextToken;
         return $this->data(compact('user','token'),'',201);
     }
-    public function login(LoginRequest $request){
+    public function login(LoginRequest $request)
+    {
+        // return  $request;
         $user = User::where('email', $request->email)->first();
         if(!Hash::check($request->password, $user->password)){
             return $this->errorsMessage(['error' => 'Email Or Password Is Not Valid']);
@@ -62,5 +64,11 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         return $this->successMessage('Updated Successfully');
-    }   
+    }  
+    
+    
+    public function test()
+    {
+        return __('message.name');
+    }
 }

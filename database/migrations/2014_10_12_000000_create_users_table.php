@@ -35,7 +35,7 @@ return new class extends Migration
             $table->text('desc')->nullable();
             $table->string('clinic_address')->nullable();
             $table->integer('ex_years')->nullable();
-            $table->string('specializon_id')->nullable();  
+            $table->foreignId('specializon_id')->nullable()->constrained('specializions','id')->cascadeOnDelete();
 
 
 
