@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\testController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\VerifyController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Users\UsersController;
 use App\Http\Controllers\SpecializionsController;
 
@@ -32,28 +34,26 @@ Route::prefix('users')->middleware('auth:sanctum')->group(function()
     
     Route::post('/check-forget-password', [VerifyController::class, 'verifyForgetPassword']);
     Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
-
-
-    Route::get('/test', [AuthController::class, 'test']);
-    Route::get('/all_tests', [testController::class, 'index']);
-    Route::post('/store_test', [testController::class, 'store_test']);
-    Route::get('/get_test/{id}', [testController::class, 'get_test']);
-
-    Route::prefix('specializions')->group(function()
-    {
-        Route::get('/', [SpecializionsController::class, 'index']);
-        Route::get('/create', [SpecializionsController::class, 'create']);
-        Route::post('/store', [SpecializionsController::class, 'store']);
-        Route::get('/edit/{id}', [SpecializionsController::class, 'edit']);
-        Route::put('/update/{id}', [SpecializionsController::class, 'update']);
-        Route::post('/delete/{id}', [SpecializionsController::class, 'delete']);
-    });
-
-
-    Route::middleware('auth:sanctum')->group(function()
-    {
+    Route::middleware('auth:sanctum')->group(function(){
         Route::get('/logout', [AuthController::class, 'logout']);
         Route::get('/send-code', [VerifyController::class, 'sendCode']);
         Route::post('/check-code', [VerifyController::class, 'checkCode']);
     });
+
+});
+
+Route::prefix('/')->middleware('auth:sanctum')->group(function(){
+
+    Route::prefix('specialization')->middleware('check.role')->group(function(){
+        Route::get('/', [SpecializationController::class, 'index']);
+        Route::post('/store', [SpecializationController::class, 'store']);
+        Route::get('/{id}', [SpecializationController::class, 'delete']);
+    });
+    
+    Route::prefix('feeses')->middleware('check.feeses')->group(function(){
+        Route::get('/', [FeesesController::class, 'index']);
+        Route::post('/store', [FeesesController::class, 'store']);
+        Route::post('/{id}', [FeesesController::class, 'update']);
+    });
+
 });
