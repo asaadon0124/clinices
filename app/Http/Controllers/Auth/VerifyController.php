@@ -55,6 +55,7 @@ class VerifyController extends Controller
         $user->save();
         return $this->data(compact('user', 'token'), 'Verify Successfully');
     }
+    
     public function verifyForgetPassword(CheckForgetPassword $request){
         $user = User::where('email', $request->email)->first();
         $link = 'http://localhost:3000/forgetPassword?email=' . urlencode($user->email);

@@ -23,9 +23,9 @@ class SendCode extends Mailable
 
     public function __construct($code, $first_name, $last_name)
     {
-        $this->code = $code;
-        $this->first_name = $first_name;
-        $this->last_name = $last_name;
+        $this->code         = $code;
+        $this->first_name   = $first_name;
+        $this->last_name    = $last_name;
     }
 
     /**

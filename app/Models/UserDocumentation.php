@@ -18,7 +18,7 @@ class UserDocumentation extends Model
 
     public function userDocsImages()
     {
-        return $this->hasMany(UserDocsImage::class);
+        return $this->hasMany(UserDocsImage::class,'user_documentations_id');
     }
 
 

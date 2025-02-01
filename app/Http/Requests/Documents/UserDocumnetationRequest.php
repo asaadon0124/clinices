@@ -25,6 +25,7 @@ class UserDocumnetationRequest extends FormRequest
         [
             'type' => 'required|string',
             'desc' => 'nullable|string',
+            'image' => 'required|file|mimes:png,jpg,jpeg'
         ];
     }
 }

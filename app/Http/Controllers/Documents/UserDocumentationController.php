@@ -10,94 +10,75 @@ use App\Models\UserDocumentation;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Documents\UserDocumnetationRequest;
+use App\Traits\Model;
 
 class UserDocumentationController extends Controller
 {
-    use ApiTrait;
+    use ApiTrait,Model;
+
     public function index()
     {
         $user = Auth::user();
 
-        if ($user->role == 'admin') 
-        {
+        if ($user->role == 'admin') {
             $docs = UserDocumentation::all();
-
-        } elseif($user->role == 'user') 
-        {
-           $docs = User::find($user->id)->user_docs;
-        }else
-        {
+        } elseif ($user->role == 'user') {
+            $docs = User::find($user->id)->user_docs;
+        } else {
             // doctor 
         }
-
-
-        if ($docs->isEmpty()) 
-        {
+        if ($docs->isEmpty()) {
             return $this->errorsMessage(['error' => 'No Data Here']);
         }
-
         return $this->data(compact('docs'));
     }
 
-
     public function store(UserDocumnetationRequest $request)
     {
-       $user = Auth::user();
-       DB::beginTransaction();
-        UserDocumentation::create(
-        [
+        $user = Auth::user();
+        $user_doc = UserDocumentation::create([
             'desc'      => $request->desc,
             'type'      => $request->type,
             'user_id'   => $user->id,
         ]);
-
-         // CHECK PHOTO
-         if ($request->hasFile('image'))
-         {
-             $photo                 =  $request->image->store('docs_image','public');
-             $docs_image            = new UserDocsImage();
-             $docs_image->image     = $photo;
-             $docs_image->user_id   = $user->id;
-             $docs_image->save();
-         }
- 
-        
-        DB::commit();
+        // CHECK PHOTO
+        if($request->hasFile('image')){
+            $this->storeImages($request, $user_doc);
             return $this->successMessage('Created Successfully');
-        DB::rollback();
-
-        
+        }
     }
 
-
-    public function update(UserDocumnetationRequest $request,$id)
+    public function update(UserDocumnetationRequest $request, $id)
     {
-       $user = Auth::user();
-       $doc = UserDocumentation::find($id);
-       if ($doc) 
-       {
-            $doc->update(
-            [
-                'desc'      => $request->desc,
-                'type'      => $request->type,
-                'user_id'   => $user->id,
+        $user = Auth::user();
+        $doc = UserDocumentation::with('userDocsImages')->where('id', $id)->first();
+        if ($doc) {
+            $doc->update([
+                'desc'    => $request->desc,
+                'type'    => $request->type,
+                'user_id' => $user->id,
             ]);
-    
-            return $this->successMessage('Updated Successfully');
-       }
-       
+            // CHECK PHOTO
+            if($request->hasFile('image')){
+                $this->deleteDocsImages($doc);
+                $this->storeImages($request, $doc);
+                return $this->successMessage('Updated Successfully');
+            }
+            return $this->errorsMessage(['error' => 'Document not found']);
+        }
     }
-
 
     public function delete($id)
     {
-       $doc = UserDocumentation::find($id);
-       if ($doc) 
-       {
-           $doc->delete();
+        $doc = UserDocumentation::with('userDocsImages')->where('id', $id)->first();
+        if ($doc) {
+            $this->deleteDocsImages($doc);
+            $doc->delete();
             return $this->successMessage('Deleted Successfully');
-       }
-       
+        }
+        return $this->errorsMessage(['error' => 'Document not found']);
     }
+   
 }
