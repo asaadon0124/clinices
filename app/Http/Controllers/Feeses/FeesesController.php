@@ -14,7 +14,8 @@ class FeesesController extends Controller
 {
     use ApiTrait;
 
-    public function index(){
+    public function index()
+    {
         $user_id = Auth::user()->id;
         $user = User::find($user_id);
         if($user->role === 'admin'){
@@ -30,16 +31,31 @@ class FeesesController extends Controller
 
     public function store(StoreRequest $request){
         $user_id = Auth::user()->id;
-        $data = Feese::create([
-            'price' => $request->price,
-            'user_id' => $user_id
-        ]);
-        return $this->successMessage('Created Successfully');
+        $feeses = User::find($user_id)->feeses;
+        // return $feeses;
+       
+
+        if ($feeses && $feeses->count() < 2) 
+        {
+            $data = Feese::create(
+                [
+                    'price'         => $request->price,
+                    'count_review'  => $request->count_review,
+                    'user_id'       => $user_id
+                ]);
+
+            return $this->successMessage('Created Successfully');
+        }else
+        {
+            return $this->errorsMessage(['error' => 'You have 2 Feeses']);
+        }
+       
     }
 
     public function update(StoreRequest $request, $id){
         $fesse = Feese::find($id);
-        $fesse->price = $request->price;
+        $fesse->price           = $request->price;
+        $fesse->count_review    = $request->count_review;
         $fesse->save();
         return $this->data(compact('fesse'));
     }

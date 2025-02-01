@@ -44,7 +44,7 @@ class User extends Authenticatable
         return $this->belongsTo(Specialization::class);
     }
 
-    public function feese(){
+    public function feeses(){
         return $this->hasMany(Feese::class);
     }
 
@@ -62,6 +62,17 @@ class User extends Authenticatable
     public function reviews_doctors()
     {
         return $this->hasMany(Review::class,'doctor_id');
+    }
+
+
+    public function reservations_user()
+    {
+        return $this->hasMany(Reservation::class,'user_id');
+    }
+
+    public function reservations_doctor()
+    {
+        return $this->hasMany(Reservation::class,'doctor_id');
     }
 
 

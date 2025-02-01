@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'check.Get_Admin_Doctor' => \App\Http\Middleware\Get_Admin_Doctor::class,
         'check.Get_User_Admin' => \App\Http\Middleware\Get_User_Admin::class,
         'check.Get_Doctor_User' => \App\Http\Middleware\Get_Doctor_User::class,
+        'check.Get_user' => \App\Http\Middleware\Get_user::class,
     ];
 }

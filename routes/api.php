@@ -10,6 +10,7 @@ use App\Http\Controllers\Feeses\FeesesController;
 use App\Http\Controllers\SpecializionsController;
 use App\Http\Controllers\Images\UserDocsImagesController;
 use App\Http\Controllers\Appointments\AppointmentsController;
+use App\Http\Controllers\Reservations\ReservationsController;
 use App\Http\Controllers\Documents\UserDocumentationController;
 use App\Http\Controllers\Specialization\SpecializationController;
 
@@ -85,6 +86,15 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function(){
         Route::post('/store', [UserDocsImagesController::class, 'store'])->middleware('check.Get_Doctor_User');
         Route::post('/update/{id}', [UserDocsImagesController::class, 'update']);
         Route::delete('/delete/{id}', [UserDocsImagesController::class, 'delete']);
+    });
+
+
+    Route::prefix('reservations')->group(function()
+    {
+        // Route::get('/', [ReservationsController::class, 'index']);
+        Route::post('/store', [ReservationsController::class, 'store'])->middleware('check.Get_user');
+        // Route::post('/update/{id}', [ReservationsController::class, 'update']);
+        // Route::delete('/delete/{id}', [ReservationsController::class, 'delete']);
     });
 
 });
