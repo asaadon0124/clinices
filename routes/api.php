@@ -6,6 +6,7 @@ use App\Http\Controllers\testController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\VerifyController;
 use App\Http\Controllers\Users\UsersController;
+use App\Http\Controllers\Doctor\DoctorController;
 use App\Http\Controllers\Feeses\FeesesController;
 use App\Http\Controllers\SpecializionsController;
 use App\Http\Controllers\Images\UserDocsImagesController;
@@ -35,7 +36,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::prefix('users')->middleware('auth:sanctum')->group(function()
 {
-    
+
     Route::post('/check-forget-password', [VerifyController::class, 'verifyForgetPassword']);
     Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
     Route::middleware('auth:sanctum')->group(function(){
@@ -95,5 +96,23 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function(){
         Route::post('/store', [ReservationsController::class, 'store']);
         Route::get('/cancel/{id}', [ReservationsController::class, 'cancel']);
     });
+
+});
+
+// DOCTORS
+Route::prefix('doctors')->middleware('auth:sanctum', 'check.Get_doctor')->group(function(){
+
+    Route::prefix('reservations')->group(function () {
+        Route::get('/', [DoctorController::class, 'getAllReservations']);
+        Route::get('/users', [DoctorController::class, 'getUsers']);
+        Route::get('/complete_reservations/{id}', [DoctorController::class, 'completeReservations']);
+    });
+
+    Route::prefix('documentations')->group(function () {
+        Route::get('/user/{id}', [DoctorController::class, 'getUser']);
+        Route::post('/update/{id}', [DoctorController::class, 'updateDocs']);
+        Route::post('/store', [DoctorController::class, 'storeDocs']);
+    });
+
 
 });

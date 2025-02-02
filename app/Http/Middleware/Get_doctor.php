@@ -8,20 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Get_User_Admin
+class Get_doctor
 {
-    use ApiTrait;
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+    use ApiTrait;
     public function handle(Request $request, Closure $next): Response
     {
-        
         $user = Auth::user();
 
-        if ($user->role == 'doctor') 
+        if ($user->role != 'doctor') 
         {
             return $this->errorsMessage(['error' => 'You Are Not Allowed To Make Request On This Route']);
         }

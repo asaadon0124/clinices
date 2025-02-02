@@ -20,8 +20,7 @@ class ReviewsController extends Controller
     public function store(ReviewsRequest $request)
     {
         $user = Auth::user();
-        if ($user->role == 'user') 
-        {
+
            Review::create(
             [
                 'comment'   => $request->comment,
@@ -30,5 +29,4 @@ class ReviewsController extends Controller
                 // 'doctor_id'   => $user->id,
             ]);
         }
-    }
 }
