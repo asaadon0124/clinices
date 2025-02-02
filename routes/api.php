@@ -89,12 +89,11 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function(){
     });
 
 
-    Route::prefix('reservations')->group(function()
+    Route::prefix('reservations')->middleware('check.Get_user')->group(function()
     {
-        // Route::get('/', [ReservationsController::class, 'index']);
-        Route::post('/store', [ReservationsController::class, 'store'])->middleware('check.Get_user');
-        // Route::post('/update/{id}', [ReservationsController::class, 'update']);
-        // Route::delete('/delete/{id}', [ReservationsController::class, 'delete']);
+        Route::get('/', [ReservationsController::class, 'index']);
+        Route::post('/store', [ReservationsController::class, 'store']);
+        Route::get('/cancel/{id}', [ReservationsController::class, 'cancel']);
     });
 
 });

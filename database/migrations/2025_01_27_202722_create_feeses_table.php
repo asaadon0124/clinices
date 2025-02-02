@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('feeses', function (Blueprint $table) {
             $table->id();
             $table->integer('price');
-            $table->enum('count_review',['one','two']);
+            $table->enum('count_review',['one','two'])->default('one')->nullable();
             $table->foreignId('user_id')->constrained();
             $table->timestamps();
         });
