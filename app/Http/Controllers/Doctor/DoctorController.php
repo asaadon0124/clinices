@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Doctor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
+use App\Models\Review;
 use App\Models\User;
 use App\Models\UserDocumentation;
 use App\Traits\ApiTrait;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 class DoctorController extends Controller
 {
     use ApiTrait, Model;
+
     public function getAllReservations(){
         $doctor_id = Auth::user()->id;
         $reservations = Reservation::where('doctor_id', $doctor_id)->get();
@@ -71,16 +73,22 @@ class DoctorController extends Controller
 
     public function storeDocs(Request $request){
         $doctor_id = Auth::user()->id;
-        $user_id = $request->user_id;
         $documentation = UserDocumentation::create([
             'type' => $request->type,
             'desc' => $request->desc,
             'doctor_id' => $doctor_id,
-            'user_id' => $user_id
+            'user_id' => $request->user_id
         ]);
         if($request->hasFile('image')){
             $this->storeImages($request, $documentation);
         }
         return $this->successMessage('Created Successfully', 201);
     }
+
+    public function getAllReviews(){
+        $doctor_id = Auth::user()->id;
+        $reviews = Review::where('doctor_id', $doctor_id)->get();
+        return $reviews;
+    }
+    
 }
