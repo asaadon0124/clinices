@@ -37,8 +37,7 @@ class AppointmentsController extends Controller
 
     public function store(AppointmentsRequest $request){
         $user_id = Auth::user()->id;
-        Appointment::create(
-        [
+        Appointment::create([
             'date' => Carbon::createFromFormat('Y-m-d', $request->date)
             ->format('Y-m-d H:i:s'),
             'user_id' => $user_id
@@ -52,13 +51,9 @@ class AppointmentsController extends Controller
         ->format('Y-m-d H:i:s');
         $appointment->save();
         return $this->successMessage('Updated Successfully');
-
     }
     
-
-
-    public function delete($id)
-    {
+    public function delete($id){
         $appointment = Appointment::find($id);
         $appointment->delete();
         return $this->successMessage('Deleted Successfully');

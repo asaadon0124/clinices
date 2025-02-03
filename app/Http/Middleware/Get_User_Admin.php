@@ -21,7 +21,7 @@ class Get_User_Admin
         
         $user = Auth::user();
 
-        if ($user->role != 'doctor') 
+        if ($user->role == 'doctor') 
         {
             return $this->errorsMessage(['error' => 'You Are Not Allowed To Make Request On This Route']);
         }
