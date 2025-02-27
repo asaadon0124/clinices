@@ -35,4 +35,8 @@ class Reservation extends Model
     {
         return $this->belongsTo(Feese::class);
     }
+
+    public function day() {
+        return $this->belongsTo(Day::class);
+    }
 }

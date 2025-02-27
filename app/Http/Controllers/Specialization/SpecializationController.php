@@ -17,11 +17,7 @@ class SpecializationController extends Controller
     public function index(){
         $user_id = Auth::user()->id;
         $user = User::find($user_id);
-        if($user->role === 'admin'){
-            $specialization = Specialization::all();
-        }else{
-            $specialization = Specialization::active()->get();
-        }
+        $specialization = Specialization::all();
         if($specialization->isEmpty()){
             return $this->successMessage('No Data Here');
         }

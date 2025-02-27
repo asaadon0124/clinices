@@ -52,8 +52,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Appointment::class);
     }
-
-
+    
     public function reviews_users()
     {
         return $this->hasMany(Review::class,'user_id');
@@ -79,5 +78,14 @@ class User extends Authenticatable
     public function user_docs()
     {
         return $this->hasMany(UserDocumentation::class);
+    }
+
+    public function doctor_docs()
+    {
+        return $this->hasMany(UserDocumentation::class, 'doctor_id');
+    }
+
+    public function contact() {
+        return $this->hasMany(Contact::class);
     }
 }

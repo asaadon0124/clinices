@@ -19,7 +19,6 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-
             $table->integer('code')->unique()->nullable();
             $table->timestamp('code_expired_at')->nullable();
             $table->string('image')->default('default.jpg')->nullable();
@@ -35,10 +34,7 @@ return new class extends Migration
             $table->text('desc')->nullable();
             $table->string('clinic_address')->nullable();
             $table->integer('ex_years')->nullable();
-            $table->foreignId('specializon_id')->nullable()->constrained('specializions','id')->cascadeOnDelete();
-
-
-
+            $table->foreignId('specialization_id')->nullable()->constrained()->cascadeOnDelete();
 
             $table->rememberToken();
             $table->timestamps();

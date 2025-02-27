@@ -37,6 +37,7 @@ class AuthController extends Controller
         $token = $user->createToken('token')->plainTextToken;
         return $this->data(compact('user','token'),'',201);
     }
+
     public function login(LoginRequest $request)
     {
         // return  $request;
@@ -45,27 +46,33 @@ class AuthController extends Controller
             return $this->errorsMessage(['error' => 'Email Or Password Is Not Valid']);
         }
         if(is_null($user->email_verified_at)){
-            return $this->errorsMessage(['error' => 'You Must Verify Your Email']);
+            $token = $user->createToken('token')->plainTextToken;
+            return $this->data(compact('user', 'token'), 'You Must Verify Your Email', 403);
         }
         $user->status = 'active';
         $user->save();
-        $user->token = $user->createToken('token')->plainTextToken;
-        return $this->data(compact('user'), 'Login Suuccessfully');
+        $token = $user->createToken('token')->plainTextToken;
+        $user->image_url = asset('images/users/'.$user->image);
+        return $this->data(compact('user','token'), 'Login Suuccessfully');
     }
+
     public function logout(){
-        Auth::user()->currentAccessToken()->delete();
+        $user = Auth::user();
+        $user->currentAccessToken()->delete();
+        $user_db = User::find($user->id);
+        $user_db->status = 'un_active';
+        $user_db->save();
         return $this->successMessage('Logout Successfully');
     }
-
-
     
     public function forgetPassword(ForgetPasswordRequest $request){
         $user = User::where('email', $request->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
-        return $this->successMessage('Updated Successfully');
+        $user->image_url = asset('images/users/'.$user->image);
+        $token = $user->createToken('token')->plainTextToken;
+        return $this->data(compact('user', 'token'));
     }  
-    
     
     public function test()
     {
