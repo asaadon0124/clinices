@@ -20,18 +20,7 @@ class UserDocumentationController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
-
-        if ($user->role == 'admin') {
-            $docs = UserDocumentation::all();
-        } elseif ($user->role == 'user') {
-            $docs = User::find($user->id)->user_docs;
-        } else {
-            // doctor 
-        }
-        if ($docs->isEmpty()) {
-            return $this->errorsMessage(['error' => 'No Data Here']);
-        }
+        $docs = UserDocumentation::with('userDocsImages')->where('user_id', Auth::id())->get();
         return $this->data(compact('docs'));
     }
 
@@ -46,8 +35,8 @@ class UserDocumentationController extends Controller
         // CHECK PHOTO
         if($request->hasFile('image')){
             $this->storeImages($request, $user_doc);
-            return $this->successMessage('Created Successfully');
         }
+        return $this->successMessage('Created Successfully');
     }
 
     public function update(UserDocumnetationRequest $request, $id)

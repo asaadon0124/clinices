@@ -19,6 +19,7 @@ class Get_Doctor_User
         if ($user->role != 'admin') {
             return $next($request);
         }
+        
         return $this->errorsMessage(['error' => 'You Are Not Allowed To Make Request On This Route']);
     }
 }

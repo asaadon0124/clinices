@@ -34,7 +34,7 @@ class SendCode extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Send Code',
+            subject: 'Verify Your Email',
         );
     }
 

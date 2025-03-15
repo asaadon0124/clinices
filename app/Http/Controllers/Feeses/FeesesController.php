@@ -31,9 +31,7 @@ class FeesesController extends Controller
 
     public function store(StoreRequest $request){
         $user_id = Auth::user()->id;
-        $feeses = User::find($user_id)->feeses;
-        // return $feeses;
-       
+        $feeses = User::find($user_id)->feeses;       
 
         if ($feeses && $feeses->count() < 2) 
         {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Day;
+use App\Models\Reservation;
 use App\Models\Review;
 use App\Models\Specialization;
 use App\Traits\ApiTrait;
@@ -13,8 +14,9 @@ use App\Models\UserDocumentation;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
 use function PHPSTORM_META\map;
+
+
 
 class UsersController extends Controller
 {
@@ -102,14 +104,11 @@ class UsersController extends Controller
         return $this->data(compact('doctors', 'totalPages'));
     }
 
-
-
-
     public function showDoctor($id)
     {
         $doctor = User::with(['feeses'])->find($id);
         $doctor->avg_rating = round($doctor->reviews_doctors->avg('rate'));
-        $doctor->reservation_count = $doctor->reservations_users->where('status', 'complete')->count();
+        $doctor->reservation_count = $doctor->reservations_doctor->whereIn('status', ['complete', 'finished'])->count();
         $doctor->specialization_name = $doctor->specialization ?  $doctor->specialization->name_en : '';
         $doctor->image_url = asset('images/users/' . $doctor->image);
         $doctor->days = Day::with(['appointments' => function ($query) use ($doctor) {
@@ -123,7 +122,7 @@ class UsersController extends Controller
             return $review;
         });
         $totalPages = $doctor->reviews->lastPage();
-        unset($doctor->reservations_users, $doctor->specialization, $doctor->reviews_doctors);
+        unset($doctor->reservations_doctor, $doctor->specialization, $doctor->reviews_doctors);
         return $this->data(compact('doctor', 'totalPages'));
     }
 
@@ -147,25 +146,45 @@ class UsersController extends Controller
         return $this->data(compact('topDoctors'));
     }
 
-    public function getDocumentations(){
+    public function getDocumentations()
+    {
         $user_id = Auth::user()->id;
         $documentations = UserDocumentation::where('user_id', $user_id)->with('userDocsImages')->with('doctor')->get();
         return $this->data(compact('documentations'));
     }
-    
+
+    public function getReservations()
+    {
+        $user_id = Auth::user()->id;
+        $reservations = Reservation::where('user_id', $user_id)->with('doctor')->get();
+        return $this->data(compact('reservations'));
+    }
+
     public function ourHappyClient()
     {
         $reviews = Review::where('rate', '5')->with('user:id,first_name,last_name,image')
-            ->orderBy('id') 
+            ->orderBy('id')
             ->get()
             ->unique(fn($review) => $review->user_id . '-' . $review->doctor_id)
             ->take(6)
-            ->map(function($review) {
-                $review->user->image_url = asset('images/users/'.$review->user->image);
+            ->map(function ($review) {
+                $review->user->image_url = asset('images/users/' . $review->user->image);
                 return $review;
             });
 
         return $this->data(compact('reviews'));
     }
 
+    // when user make review on the doctor 
+    public function reservationStatus($id)
+    {
+        $reservation_status = Reservation::where('doctor_id', $id)->where('user_id', Auth::id())->get();
+        $status = $reservation_status->whereIn('status', ['complete', 'finished'])->first();
+        if ($status) {
+            $success = true;
+        } else {
+            $success = false;
+        }
+        return $this->data(compact('success'));
+    }
 }

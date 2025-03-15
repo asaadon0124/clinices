@@ -29,6 +29,7 @@ class DoctorController extends Controller
 
         $reservations = Reservation::where('doctor_id', $doctor_id)
             ->with(['appointment.days', 'user'])
+            ->where('status', '!=', 'finished')
             ->get();
 
         $today_reservations = $reservations->filter(function ($reservation) use ($today) {
@@ -41,7 +42,7 @@ class DoctorController extends Controller
         });
 
         $weekly_earnings = Day::with(['reservations' => function ($query) use ($doctor_id) {
-            $query->where('doctor_id', $doctor_id);
+            $query->where('doctor_id', $doctor_id)->where('status', '!=', 'finished');
         }, 'reservations.feese'])
         ->orderBy('date', 'asc')
         ->get()
@@ -58,7 +59,7 @@ class DoctorController extends Controller
         $total_review = Review::where('doctor_id', $doctor_id)->count();
 
         $weakly_appointments = Day::withCount(['appointments' => function ($appointment) use ($doctor_id) {
-            $appointment->where('user_id', $doctor_id);
+            $appointment->where('user_id', $doctor_id)->where('status', '!=', 'finished');
         }])->get();
 
         $total_weakly_appointments = $weakly_appointments->sum('appointments_count');
@@ -74,6 +75,9 @@ class DoctorController extends Controller
         $reservation = Reservation::find($id);
         if ($reservation->status === 'pendding') {
             $reservation->status = 'complete';
+            if($reservation->payment_method == 'cache' && $reservation->is_paid == 'not_paid'){
+                $reservation->is_paid = 'paid';
+            }
             $reservation->save();
             return $this->successMessage('Completed Successfully');
         }
@@ -95,7 +99,7 @@ class DoctorController extends Controller
     {
         $doctor_id = Auth::user()->id;
         $weakly_appointments = Day::with(['appointments' => function ($query) use ($doctor_id) {
-            $query->where('user_id', $doctor_id);
+            $query->where('user_id', $doctor_id)->where('status', '!=', 'finished');
         }])->orderBy('date')->get();
         return $this->data(compact('weakly_appointments'));
     }
@@ -106,7 +110,8 @@ class DoctorController extends Controller
     public function getAllReservations()
     {
         $doctor_id = Auth::user()->id;
-        $weakly_reservations = Reservation::where('doctor_id', $doctor_id)->with(['user', 'day'])->get();
+        $weakly_reservations = Reservation::where('doctor_id', $doctor_id)
+        ->where('status', '!=', 'finished')->with(['user', 'day'])->get();
         $weakly_reservations->map(function ($reservation) {
             $reservation->user->image_url = asset('images/users/' . $reservation->user->image);
             return $reservation;
