@@ -11,7 +11,13 @@ class UserDocsImage extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['image_url']; 
 
+    public function getImageUrlAttribute()
+    {
+        return asset('images/docs_images/' . $this->image);
+    }
+    
     public function user_doc()
     {
         return $this->belongsTo(UserDocumentation::class);

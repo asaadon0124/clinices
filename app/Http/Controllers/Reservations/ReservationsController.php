@@ -22,13 +22,6 @@ class ReservationsController extends Controller
 {
     use ApiTrait;
 
-    public function index()
-    {
-        $user_id = Auth::user()->id;
-        $reservations = Reservation::where('user_id', $user_id)->get();
-        return $this->data(compact('reservations'));
-    }
-
     public function store(StoreReservation $request)
     {
         $day = Day::find($request->day_id);

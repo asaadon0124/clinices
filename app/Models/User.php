@@ -40,6 +40,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(){
+        return asset('images/users/' . $this->image);
+    }
+
     public function specialization(){
         return $this->belongsTo(Specialization::class);
     }

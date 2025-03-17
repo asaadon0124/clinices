@@ -72,13 +72,14 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function () {
 
     Route::prefix('user_documentations')->group(function () {
         Route::get('/', [UserDocumentationController::class, 'index']);
+        Route::get('/show/{id}', [UserDocumentationController::class, 'show']);
         Route::post('/store', [UserDocumentationController::class, 'store'])->middleware('check.Get_Doctor_User');
         Route::post('/update/{id}', [UserDocumentationController::class, 'update']);
         Route::delete('/delete/{id}', [UserDocumentationController::class, 'delete']);
+        Route::delete('/deleteImage/{id}', [UserDocumentationController::class, 'deleteImage']);
     });
 
     Route::prefix('reservations')->group(function () {
-        Route::get('/', [ReservationsController::class, 'index']);
         Route::post('/store', [ReservationsController::class, 'store']);
         Route::post('/cancel/{id}', [ReservationsController::class, 'cancel']);
     });

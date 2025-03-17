@@ -156,7 +156,7 @@ class UsersController extends Controller
     public function getReservations()
     {
         $user_id = Auth::user()->id;
-        $reservations = Reservation::where('user_id', $user_id)->with('doctor')->get();
+        $reservations = Reservation::where('user_id', $user_id)->with(['doctor.specialization', 'appointment','feese'])->get();
         return $this->data(compact('reservations'));
     }
 
