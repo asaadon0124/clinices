@@ -84,7 +84,7 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function () {
         Route::post('/cancel/{id}', [ReservationsController::class, 'cancel']);
     });
 
-    Route::prefix('reviews')->middleware('check.Get_user')->group(function () {
+    Route::prefix('reviews')->middleware('check.Get_Doctor_User')->group(function () {
         Route::post('/store', [ReviewsController::class, 'store']);
         Route::post('/update/{id}', [ReviewsController::class, 'update']);
         Route::delete('/delete/{id}', [ReviewsController::class, 'delete']);
