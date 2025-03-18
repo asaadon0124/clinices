@@ -17,15 +17,15 @@ class ReviewsController extends Controller
 
     public function store(ReviewsRequest $request)
     {
-        $user_id = Auth::id(); 
+        $user_id = Auth::id();
         $doctor_id = $request->doctor_id;
-    
+
         $reservations = Reservation::where('user_id', $user_id)
             ->where('doctor_id', $doctor_id)
             ->get();
-    
-        $completedReservation = $reservations->firstWhere('status', 'complete');
-    
+
+        $completedReservation = $reservations->whereIn('status', ['complete', 'finished'])->first();
+
         if ($completedReservation) {
             Review::create([
                 'comment'   => $request->comment,
@@ -34,14 +34,13 @@ class ReviewsController extends Controller
                 'doctor_id' => $doctor_id,
             ]);
             return $this->successMessage('Created Successfully');
-        } elseif ($reservations->isNotEmpty()) {
-            return $this->errorsMessage(['error' => 'You Must Complete a Reservation']);
-        } else {
-            return $this->errorsMessage(['error' => 'You Must Have a Reservation']);
+        }else {
+            return $this->errorsMessage(['error' => 'You Must Have Or Complete a Reservation']);
         }
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $review = Review::find($id);
         $review->update([
             'comment' => $request->comment,
@@ -51,7 +50,8 @@ class ReviewsController extends Controller
     }
 
 
-    public function delete($id){
+    public function delete($id)
+    {
         $review = Review::find($id);
         $review->delete();
         return $this->successMessage('Deleted Successfully');

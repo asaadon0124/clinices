@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('date');
+            $table->enum('status', ['active', 'un_active','finished'])->default('un_active')->nullable();
+            $table->string('start_time');
+            $table->string('end_time');
             $table->foreignId('user_id')->constrained();
+            $table->foreignId('day_id')->constrained();
             $table->timestamps();
         });
     }

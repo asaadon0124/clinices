@@ -42,4 +42,12 @@ trait Model
             }
         }
     }
+
+    public function deletePhotoWithoutDefault($photoPath, $photoName)
+    {
+        if (file_exists($photoPath) && $photoName != 'default.jpg') {
+            unlink($photoPath);
+        }
+    }
+
 }

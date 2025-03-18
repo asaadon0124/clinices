@@ -15,30 +15,27 @@ return new class extends Migration
             $table->id();
             $table->string('first_name');
             $table->string('last_name');
+            $table->string('phone')->unique()->nullable();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->enum('gender',['M','F'])->default('M')->nullable();
             $table->string('password');
-
-
+            
+            
             $table->integer('code')->unique()->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('code_expired_at')->nullable();
             $table->string('image')->default('default.jpg')->nullable();
             $table->enum('status',['active','un_active'])->default('un_active')->nullable();
             $table->enum('role',['user','admin','doctor'])->default('user')->nullable();
-            $table->enum('gender',['M','F'])->default('M')->nullable();
-            $table->integer('age');
+            $table->integer('age')->nullable();
             $table->string('city')->nullable();
             $table->string('address')->nullable();
-            $table->string('phone')->unique();
 
             // DOCTOR COLUMNS 
             $table->text('desc')->nullable();
             $table->string('clinic_address')->nullable();
             $table->integer('ex_years')->nullable();
-            $table->foreignId('specializon_id')->nullable()->constrained('specializions','id')->cascadeOnDelete();
-
-
-
+            $table->foreignId('specialization_id')->nullable()->constrained()->cascadeOnDelete();
 
             $table->rememberToken();
             $table->timestamps();

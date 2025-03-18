@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->enum('status',['pendding','complete','cancel'])->default('pendding')->nullable();
+            $table->enum('status',['pendding','complete','cancel','finished'])->default('pendding');
             $table->enum('review',['0','1'])->default(0)->nullable();
 
             $table->foreignId('appointment_id')->constrained('appointments','id')->cascadeOnDelete();
             $table->foreignId('doctor_id')->constrained('users','id')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users','id')->cascadeOnDelete();
             $table->foreignId('feese_id')->constrained('feeses','id')->cascadeOnDelete();
+            $table->foreignId('day_id')->constrained('days','id')->cascadeOnDelete();
+
+            $table->enum('payment_method', ['paypal', 'stripe', 'cache'])->nullable();
+            $table->enum('is_paid', ['paid', 'not_paid'])->default('not_paid');
+            $table->string('transaction_id')->nullable();
             $table->timestamps();
         });
     }

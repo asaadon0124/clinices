@@ -40,6 +40,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute(){
+        return asset('images/users/' . $this->image);
+    }
+
     public function specialization(){
         return $this->belongsTo(Specialization::class);
     }
@@ -52,8 +58,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Appointment::class);
     }
-
-
+    
     public function reviews_users()
     {
         return $this->hasMany(Review::class,'user_id');
@@ -79,5 +84,14 @@ class User extends Authenticatable
     public function user_docs()
     {
         return $this->hasMany(UserDocumentation::class);
+    }
+
+    public function doctor_docs()
+    {
+        return $this->hasMany(UserDocumentation::class, 'doctor_id');
+    }
+
+    public function contact() {
+        return $this->hasMany(Contact::class);
     }
 }

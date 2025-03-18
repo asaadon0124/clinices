@@ -12,6 +12,7 @@ class Appointment extends Model
 
 
     protected $guarded = [];
+    
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -21,6 +22,10 @@ class Appointment extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class);
+    }
+
+    public function days() {
+        return $this->belongsTo(Day::class, 'day_id');
     }
 
 }

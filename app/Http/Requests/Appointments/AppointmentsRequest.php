@@ -23,7 +23,11 @@ class AppointmentsRequest extends FormRequest
     {
         return 
         [
-            'date' => 'required|date|after_or_equal:today',
+            'status' => 'nullable|in:active,un_active',
+            'start_time' => 'required|date_format:H:i:s A',
+            'end_time' => 'required|date_format:H:i:s A|after:start_time',
+            'day_id' => 'required|integer',
+            'user_id' => 'required|integer'
         ];
     }
 }

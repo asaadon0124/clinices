@@ -25,7 +25,7 @@ class StoreReservation extends FormRequest
             'status' => 'nullable|string|in:pendding,complete,cancel',
             'appointment_id' => 'required|integer',
             'doctor_id' => 'required|integer',
-            'feese_id' => 'required|integer',
+            'day_id' => 'required|integer',
         ];
     }
 }

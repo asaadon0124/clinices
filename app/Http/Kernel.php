@@ -34,7 +34,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
+            // \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
 
@@ -71,5 +71,6 @@ class Kernel extends HttpKernel
         'check.Get_Doctor_User' => \App\Http\Middleware\Get_Doctor_User::class,
         'check.Get_User_Admin' => \App\Http\Middleware\Get_User_Admin::class,
         'check.Get_doctor' => \App\Http\Middleware\Get_doctor::class,
+        'check.Get_Admin' => \App\Http\Middleware\Get_Admin::class,
     ];
 }

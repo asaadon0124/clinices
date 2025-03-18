@@ -16,6 +16,11 @@ class UserDocumentation extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
+    public function doctor()
+    {
+        return $this->belongsTo(User::class,'doctor_id');
+    }
+
     public function userDocsImages()
     {
         return $this->hasMany(UserDocsImage::class,'user_documentations_id');
