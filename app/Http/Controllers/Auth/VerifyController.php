@@ -21,6 +21,7 @@ class VerifyController extends Controller
     public function sendCode(Request $request)
     {
         $authanticated_user = Auth::user();
+        return $authanticated_user;
         $user = User::find($authanticated_user->id);
         // $token = $user->createToken('token')->plainTextToken;
 

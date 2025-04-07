@@ -86,6 +86,8 @@ class AuthController extends Controller
         $user = User::find(Auth::id());
         $data = $request->except('image');  
         $token = $request->header('Authorization');
+        $tokenParts = explode(' ', $token);
+        $token = end($tokenParts);
 
         if($request->hasFile('image')){
             $photoName = $user->image;

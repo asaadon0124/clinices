@@ -44,7 +44,7 @@ class SendCode extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.sendCode',
+            view: 'email.SendCode',
         );
     }
 
