@@ -81,14 +81,14 @@ class UsersController extends Controller
         $page = $name ? 1 : request('page', 1);
         $doctors = $query->paginate(5, ['*'], 'page', $page);
 
-        $doctors->transform(function ($doctor) {
+        $doctors->transform(function ($doctor) use ($today){
             $doctor->image_url = asset('images/users/' . $doctor->image);
             $doctor->specialization_name = $doctor->specialization ? $doctor->specialization->name_en : '';
             $doctor->avg_rating = round($doctor->reviews_doctors()->avg('rate'));
             $doctor->reservation_count = $doctor->reservations_users->where('status', 'complete')->count();
             $doctor->feeses;
 
-            $doctor->days = Day::with(['appointments' => function ($appointment) use ($doctor) {
+            $doctor->days = Day::where('date', '>=', $today)->with(['appointments' => function ($appointment) use ($doctor) {
                 $appointment->where('user_id', $doctor->id)->where('status', 'un_active');
             }])->orderBy('date')->get()->map(function ($day) {
                 $day->day = $day->day . ' ' . date('d/m/Y', strtotime($day->date));
@@ -106,7 +106,8 @@ class UsersController extends Controller
 
     public function showDoctor($id)
     {
-        $doctor = User::with(['feeses'])->find($id);
+        
+        $doctor = User::with(['feeses'])->findOrFail($id);
         $doctor->avg_rating = round($doctor->reviews_doctors->avg('rate'));
         $doctor->reservation_count = $doctor->reservations_doctor->whereIn('status', ['complete', 'finished'])->count();
         $doctor->specialization_name = $doctor->specialization ?  $doctor->specialization->name_en : '';
@@ -156,7 +157,7 @@ class UsersController extends Controller
     public function getReservations()
     {
         $user_id = Auth::user()->id;
-        $reservations = Reservation::where('user_id', $user_id)->with(['doctor.specialization', 'appointment','feese'])->get();
+        $reservations = Reservation::where('user_id', $user_id)->where('payment_method', '!=', null)->with(['doctor.specialization', 'appointment','feese'])->get();
         return $this->data(compact('reservations'));
     }
 

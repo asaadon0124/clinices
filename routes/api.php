@@ -33,8 +33,8 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 
 Route::prefix('users')->group(function () {
     
-        Route::post('/check-forget-password', [VerifyController::class, 'verifyForgetPassword']);
-        Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
+    Route::post('/check-forget-password', [VerifyController::class, 'verifyForgetPassword']);
+    Route::post('/forget-password', [AuthController::class, 'forgetPassword']);
 
     Route::prefix('get-doctors')->group(function () {
         Route::get('/', [UsersController::class, 'getDoctors']);
@@ -84,11 +84,13 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function () {
         Route::post('/cancel/{id}', [ReservationsController::class, 'cancel']);
     });
 
+    // remove this Middleware 
     Route::prefix('reviews')->middleware('check.Get_Doctor_User')->group(function () {
         Route::post('/store', [ReviewsController::class, 'store']);
         Route::post('/update/{id}', [ReviewsController::class, 'update']);
         Route::delete('/delete/{id}', [ReviewsController::class, 'delete']);
     });
+    
 });
 
 // DOCTORS
@@ -105,6 +107,7 @@ Route::prefix('doctors')->middleware('auth:sanctum', 'check.Get_doctor')->group(
         Route::get('/', [DoctorController::class, 'getAllReservations']);
         Route::get('/today-reservations', [DoctorController::class, 'todayReservations']);
         Route::get('/complete_reservations/{id}', [DoctorController::class, 'completeReservations']);
+        Route::get('/cancel_reservations/{id}', [DoctorController::class, 'cancelReservations']);
     });
 
     Route::prefix('users')->group(function () {
@@ -127,20 +130,28 @@ Route::prefix('doctors')->middleware('auth:sanctum', 'check.Get_doctor')->group(
 Route::prefix('admin')->middleware(['auth:sanctum', 'check.Get_Admin'])->group(function () {
 
     Route::prefix('/')->group(function () {
-        Route::get('/make/{id}', [AdminController::class, 'makeAdmin']);
+        Route::post('/make/{id}', [AdminController::class, 'changeRole']);
         Route::get('/dashboard', [AdminController::class, 'allContentInDashboard']);
+    });
+
+    Route::prefix('/specializations')->group(function () {
+        Route::get('/',[AdminController::class, 'getAllSpecializations']);
+        Route::get('/active',[AdminController::class, 'getActiveSpecializations']);
+        Route::post('/make/{id}', [AdminController::class, 'changeSpecializationStatus']);
+        Route::post('/store', [AdminController::class, 'storeSpecialization']);
     });
 
     Route::prefix('users')->group(function () {
         Route::get('/', [AdminController::class, 'getUsers']);
         Route::get('/{id}', [AdminController::class, 'getUser']);
         Route::delete('/{id}', [AdminController::class, 'deleteUser']);
+        Route::post('/store', [AdminController::class, 'storeUser']);
     });
 
     Route::prefix('doctors')->group(function () {
         Route::get('/', [AdminController::class, 'getDoctors']);
         Route::get('/{id}', [AdminController::class, 'getDoctor']);
-        Route::get('/make/{id}', [AdminController::class, 'makeDoctor']);
+        Route::post('/store', [AdminController::class, 'storeDoctor']);
     });
 
     Route::prefix('reviews')->group(function () {

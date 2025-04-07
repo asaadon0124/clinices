@@ -101,7 +101,8 @@ class DoctorController extends Controller
         $weakly_appointments = Day::with(['appointments' => function ($query) use ($doctor_id) {
             $query->where('user_id', $doctor_id)->where('status', '!=', 'finished');
         }])->orderBy('date')->get();
-        return $this->data(compact('weakly_appointments'));
+        $days = Day::all();
+        return $this->data(compact('weakly_appointments', 'days'));
     }
 
 
@@ -205,6 +206,13 @@ class DoctorController extends Controller
     public function storeDocs(Request $request)
     {
         $doctor_id = Auth::user()->id;
+
+        $request->validate([
+            'type' => 'required|string',
+            'desc' => 'required|string',
+            'user_id' => 'required|integer'
+        ]);
+
         $documentation = UserDocumentation::create([
             'type' => $request->type,
             'desc' => $request->desc,

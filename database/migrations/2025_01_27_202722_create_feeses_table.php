@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('price');
             $table->enum('count_review',['one','two'])->default('one')->nullable();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
