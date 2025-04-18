@@ -81,7 +81,7 @@ class UsersController extends Controller
         $page = $name ? 1 : request('page', 1);
         $doctors = $query->paginate(5, ['*'], 'page', $page);
 
-        $doctors->transform(function ($doctor) use ($today){
+        $doctors->transform(function ($doctor) use ($today) {
             $doctor->image_url = asset('images/users/' . $doctor->image);
             $doctor->specialization_name = $doctor->specialization ? $doctor->specialization->name_en : '';
             $doctor->avg_rating = round($doctor->reviews_doctors()->avg('rate'));
@@ -106,7 +106,7 @@ class UsersController extends Controller
 
     public function showDoctor($id)
     {
-        
+
         $doctor = User::with(['feeses'])->findOrFail($id);
         $doctor->avg_rating = round($doctor->reviews_doctors->avg('rate'));
         $doctor->reservation_count = $doctor->reservations_doctor->whereIn('status', ['complete', 'finished'])->count();
@@ -132,19 +132,22 @@ class UsersController extends Controller
     {
         $doctors = User::where('role', 'doctor')->with(['reviews_doctors', 'specialization'])->get();
 
-        $topDoctors = $doctors->groupBy('specialization_id')->mapWithKeys(function ($doctors) {
+        $topDoctors = $doctors->groupBy('specialization_id')->map(function ($doctors) {
             $bestDoctor = $doctors->sortByDesc(function ($doctor) {
                 return round($doctor->reviews_doctors->avg('rate'));
             })->first();
 
-            $bestDoctor->average_rating = round($bestDoctor->reviews_doctors->avg('rate'));
-            $bestDoctor->image_url = asset('images/users/' . $bestDoctor->image);
-            $specializationName = $bestDoctor->specialization->name_en ?? '';
+            return [
+                'id' => $bestDoctor->id,
+                'first_name' => $bestDoctor->first_name,
+                'last_name' => $bestDoctor->last_name,
+                'average_rating' => round($bestDoctor->reviews_doctors->avg('rate')),
+                'specialization' => $bestDoctor->specialization->name_en ?? '',
+                'image_url' => asset('images/users/' . $bestDoctor->image),
+            ];
+            })->values();
 
-            return [$specializationName => $bestDoctor->makeHidden(['specialization', 'reviews_doctors'])];
-        });
-
-        return $this->data(compact('topDoctors'));
+        return $this->data(['topDoctors' => $topDoctors]);
     }
 
     public function getDocumentations()
@@ -157,7 +160,7 @@ class UsersController extends Controller
     public function getReservations()
     {
         $user_id = Auth::user()->id;
-        $reservations = Reservation::where('user_id', $user_id)->where('payment_method', '!=', null)->with(['doctor.specialization', 'appointment','feese'])->get();
+        $reservations = Reservation::where('user_id', $user_id)->where('payment_method', '!=', null)->with(['doctor.specialization', 'appointment', 'feese'])->get();
         return $this->data(compact('reservations'));
     }
 

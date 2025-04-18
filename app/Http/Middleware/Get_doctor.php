@@ -16,6 +16,7 @@ class Get_doctor
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     use ApiTrait;
+    
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
