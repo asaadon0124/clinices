@@ -16,6 +16,7 @@ use App\Http\Controllers\Contact\ContactController;
 use App\Http\Controllers\Days\DaysController;
 use App\Http\Controllers\Reservations\ReservationsController;
 use App\Http\Controllers\Documents\UserDocumentationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PayMethodsController;
 use App\Http\Controllers\Reviews\ReviewsController;
 use App\Http\Controllers\Specialization\SpecializationController;
@@ -24,10 +25,8 @@ use App\Models\User;
 use App\Notifications\NewMessageNotification;
 use Illuminate\Support\Facades\Auth;
 
-
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle']);
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback']);
 
@@ -45,6 +44,7 @@ Route::prefix('users')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/notifications', [NotificationController::class, 'index']);
         Route::get('/logout', [AuthController::class, 'logout']);
         Route::post('/profile', [AuthController::class, 'profile']);
         Route::get('/send-code', [VerifyController::class, 'sendCode']);
@@ -56,18 +56,14 @@ Route::prefix('users')->group(function () {
 
 });
 
+Route::get('/days', [DaysController::class, 'updateDate']);
+
 Route::prefix('/')->middleware('auth:sanctum')->group(function () {
 
     Route::prefix('specialization')->middleware('check.Get_Doctor_User')->group(function () {
         Route::get('/', [SpecializationController::class, 'index']);
         Route::post('/store', [SpecializationController::class, 'store']);
         Route::delete('/{id}', [SpecializationController::class, 'delete']);
-    });
-
-    Route::prefix('feeses')->middleware('check.Get_Admin_Doctor')->group(function () {
-        Route::get('/', [FeesesController::class, 'index']);
-        Route::post('/store', [FeesesController::class, 'store']);
-        Route::post('/{id}', [FeesesController::class, 'update']);
     });
 
     Route::prefix('user_documentations')->group(function () {
@@ -85,7 +81,7 @@ Route::prefix('/')->middleware('auth:sanctum')->group(function () {
     });
 
     // remove this Middleware 
-    Route::prefix('reviews')->middleware('check.Get_Doctor_User')->group(function () {
+    Route::prefix('reviews')->group(function () {
         Route::post('/store', [ReviewsController::class, 'store']);
         Route::post('/update/{id}', [ReviewsController::class, 'update']);
         Route::delete('/delete/{id}', [ReviewsController::class, 'delete']);
@@ -119,6 +115,12 @@ Route::prefix('doctors')->middleware('auth:sanctum', 'check.Get_doctor')->group(
         Route::post('/store', [DoctorController::class, 'storeDocs']);
         Route::post('/update/{id}', [DoctorController::class, 'updateDocs']);
         Route::delete('/delete/{id}', [DoctorController::class, 'deleteDocs']);
+    });
+
+    Route::prefix('feeses')->group(function () {
+        Route::get('/', [FeesesController::class, 'index']);
+        Route::post('/store', [FeesesController::class, 'store']);
+        Route::post('/{id}', [FeesesController::class, 'update']);
     });
 
     Route::prefix('reviews')->group(function () {
@@ -172,5 +174,4 @@ Route::prefix('stripe')->group(function () {
 Route::prefix('paypal')->group(function () {
     Route::get('/create/{id}', [PayMethodsController::class, 'createPaypalAction']);
     Route::get('/success_paypal', [PayMethodsController::class, 'success_paypal_payment']);
-    // Route::get('/cancel_paypal', [PayMethodsController::class, 'cancel_paypal_payment']);
 });

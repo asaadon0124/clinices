@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Doctor;
 
+use App\Events\PusherEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Day;
+use App\Models\Notification;
 use App\Models\Reservation;
 use App\Models\Review;
 use App\Models\User;
@@ -164,13 +166,6 @@ class DoctorController extends Controller
         return $reviews;
     }
 
-
-
-
-
-
-    
-
     // =======================================================
 
     public function updateDocs(Request $request, $id)
@@ -205,8 +200,8 @@ class DoctorController extends Controller
 
     public function storeDocs(Request $request)
     {
-        $doctor_id = Auth::user()->id;
-
+        $doctor = Auth::user();
+        
         $request->validate([
             'type' => 'required|string',
             'desc' => 'required|string',
@@ -216,12 +211,22 @@ class DoctorController extends Controller
         $documentation = UserDocumentation::create([
             'type' => $request->type,
             'desc' => $request->desc,
-            'doctor_id' => $doctor_id,
+            'doctor_id' => $doctor->id,
             'user_id' => $request->user_id
         ]);
+
         if ($request->hasFile('image')) {
             $this->storeImages($request, $documentation);
         }
+
+        event(new PusherEvent("$doctor->first_name $doctor->last_name has stored a report", $request->user_id));
+
+        Notification::create([
+            'message' => "$doctor->first_name $doctor->last_name has stored report",
+            'user_id' => $request->user_id,
+            'doctor_id' => $doctor->id
+        ]);
+
         return $this->successMessage('Created Successfully', 201);
     }
 }

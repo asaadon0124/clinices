@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PusherEvent;
 use App\Models\Appointment;
+use App\Models\Notification;
 use App\Models\Reservation;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Traits\ApiTrait;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 use Illuminate\Support\Facades\Session as StripeSession;
@@ -73,6 +76,8 @@ class PayMethodsController extends Controller
 
     public function success_paypal_payment(Request $request)
     {
+        $user = Auth::user();
+
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
@@ -91,6 +96,14 @@ class PayMethodsController extends Controller
 
             $reservation->appointment->status = 'active';
             $reservation->appointment->save();
+
+            event(new PusherEvent("$user->first_name  $user->last_name has made reservation", $reservation->doctor_id));
+
+            Notification::create([
+                'message' => "$user->first_name  $user->last_name has made reservation",
+                'user_id' => $user->id,
+                'doctor_id' => $reservation->doctor_id
+            ]);
 
             return response()->json([
                 'message' => 'Payment successful',
@@ -142,6 +155,8 @@ class PayMethodsController extends Controller
 
     public function successStripeAction(Request $request)
     {
+        $user = Auth::user();
+
         // انا حافظه ف ال services => config
         Stripe::setApiKey(config('services.stripe.secret'));
 
@@ -173,6 +188,15 @@ class PayMethodsController extends Controller
             $reservation->appointment->status = 'active';
             $reservation->appointment->save();
 
+
+            event(new PusherEvent("$user->first_name  $user->last_name has made reservation", $reservation->doctor_id)); 
+            
+            Notification::create([
+                'message' => "$user->first_name  $user->last_name has made reservation",
+                'user_id' => $user->id,
+                'doctor_id' => $reservation->doctor_id
+            ]);
+
             return response()->json([
                 'message' => 'Payment successful',
                 'status' => 'COMPLETED',
@@ -190,12 +214,22 @@ class PayMethodsController extends Controller
 
     public function createCacheAction($id)
     {
+        $user = Auth::user();
+
         $reservation = Reservation::with('appointment')->where('id', $id)->first();
         $reservation->payment_method = 'cache';
         $reservation->save();
         $reservation->appointment->status = 'active';
         $reservation->appointment->save();
         
+        event(new PusherEvent("$user->first_name  $user->last_name has made reservation", $reservation->doctor_id)); 
+        
+        Notification::create([
+            'message' => "$user->first_name  $user->last_name has made reservation",
+            'user_id' => $user->id,
+            'doctor_id' => $reservation->doctor_id
+        ]);
+
         return $this->data([
             'message' => 'Payment Successful! Your reservation is confirmed.',
             'status' => 'COMPLETED',

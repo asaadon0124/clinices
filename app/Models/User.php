@@ -94,4 +94,9 @@ class User extends Authenticatable
     public function contact() {
         return $this->hasMany(Contact::class);
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
 }

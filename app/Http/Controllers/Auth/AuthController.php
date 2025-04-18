@@ -36,6 +36,7 @@ class AuthController extends Controller
                 'phone'         => $request->phone
             ];
     }
+
     public function register(RegisterRequest $request)
     {
         $data = $this->insertData($request);

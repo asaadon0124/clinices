@@ -17,15 +17,7 @@ class FeesesController extends Controller
     public function index()
     {
         $user_id = Auth::user()->id;
-        $user = User::find($user_id);
-        if($user->role === 'admin'){
-            $feeses = Feese::all();
-        } else if($user->role === 'doctor'){
-            $feeses = User::find($user_id)->feese;
-        }
-        if($feeses->isEmpty()){
-            return $this->successMessage('No Data Here');
-        }
+        $feeses = User::find($user_id)->feeses;
         return $this->data(compact('feeses'));
     }
 
